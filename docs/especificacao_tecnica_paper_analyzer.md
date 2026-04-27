@@ -3,7 +3,6 @@
 ## 1. Visão Geral
 O **Paper Analyzer AI** é um sistema de software distribuído projetado para automatizar a revisão técnica de artigos científicos. Ele utiliza uma arquitetura baseada em microsserviços (conceitualmente separada em Frontend e Backend) para processar documentos PDF através de uma pipeline de inteligência artificial de alta precisão.
 
----
 
 ## 2. Requisitos do Sistema
 
@@ -23,8 +22,6 @@ O **Paper Analyzer AI** é um sistema de software distribuído projetado para au
 - **RNF03 (Escalabilidade)**: O storage deve ser organizado por `user_id` e `paper_id`.
 - **RNF04 (Resiliência)**: Implementação de *Polling* para garantir que arquivos PDFs estejam indexados no Vector Store antes da análise.
 
----
-
 ## 3. Arquitetura de Software
 
 ### 3.1 Diagrama de Fluxo
@@ -41,7 +38,6 @@ O **Paper Analyzer AI** é um sistema de software distribuído projetado para au
 2. **Jinja2 Templates**: Estrutura moderna (Bootstrap 5.3) com Dark Mode persistente.
 3. **Async JS**: Script de monitoramento de status e busca de logs via AJAX/Fetch.
 
----
 
 ## 4. Engenharia de Integração IA (OpenAI)
 
@@ -59,8 +55,6 @@ A aplicação utiliza a **Responses API (Experimental)** da OpenAI:
 5. **Step 5: Summary for Committee** -> Compressão da revisão editorial (max 5000 chars).
 6. **Step 6: Finalization** -> Persistência final de logs técnicos (tokens, modelo, etc).
 
----
-
 ## 5. Estrutura de Storage
 `backend/storage/outputs/user_{id}/paper_{id}/`
 
@@ -71,13 +65,10 @@ Arquivos geradores:
 - `Comments to Authors - Summary 5000 chars.txt`
 - `Comments to Committee - Summary 5000 chars.txt`
 
----
-
 ## 6. Segurança e Estabilidade
 - **Timezone Aware**: Datas de upload ajustadas para o horário local do servidor.
 - **Atomic Concurrency**: Garantia de que logs de erro sejam gravados mesmo em falhas de falha crítica na API da OpenAI.
 - **Recursive ID Tracking**: Resiliência contra mudanças de formato no JSON de resposta da OpenAI.
 
----
 **Data**: 26 de Abril de 2026
 **Versão**: 2.1
