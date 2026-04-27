@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Logs de Análise - {{ paper.original_filename }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="mb-0">Logs de Análise</h2>
+            <p class="text-muted">Análise técnica detalhada para: <strong>{{ paper.original_filename }}</strong></p>
+        </div>
+        <div>
+            <a href="{{ url_for('analysis_detail', paper_id=paper.id) }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar para Detalhes
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 bg-dark text-light">
+    <div class="card-body p-4">
+        {% if not logs %}
+        <div class="text-center py-5">
+            <i class="bi bi-journal-text display-1 text-secondary mb-3"></i>
+            <h3>Nenhum log encontrado</h3>
+            <p class="text-muted">Os logs estarão disponíveis assim que a análise for iniciada.</p>
+        </div>
+        {% else %}
+        <div class="timeline">
+            {% for log in logs %}
+            <div class="timeline-item pb-4 mb-4 border-bottom border-secondary">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="badge {% if log.status == 'success' %}bg-success{% else %}bg-danger{% endif %} me-2">
+                            {{ log.status | upper }}
+                        </span>
+                        <h5 class="d-inline mb-0">{{ log.step_name }}</h5>
+                    </div>
+                    <small class="text-muted">{{ log.created_at }}</small>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-lg-6 mb-3">
+                        <div class="p-3 bg-black rounded border border-secondary h-100">
+                            <h6 class="text-info mb-2 small text-uppercase">Request (Envio)</h6>
+                            <pre class="mb-0 small" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto; color: #a5d6ff;">{{ log.request_data }}</pre>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <div class="p-3 bg-black rounded border border-secondary h-100">
+                            <h6 class="text-warning mb-2 small text-uppercase">Response / Feedback (Retorno)</h6>
+                            {% if log.response_data %}
+                            <pre class="mb-0 small" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto; color: #aff5b4;">{{ log.response_data }}</pre>
+                            {% elif log.error_detail %}
+                            <div class="alert alert-danger mb-0 py-2">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                {{ log.error_detail }}
+                            </div>
+                            {% else %}
+                            <p class="text-muted small mb-0 italic">Sem retorno capturado.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    pre::-webkit-scrollbar {
+        width: 6px;
+    }
+    pre::-webkit-scrollbar-track {
+        background: #1a1a1a;
+    }
+    pre::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 10px;
+    }
+    .timeline-item:last-child {
+        border-bottom: none !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+</style>
+{% endblock %}

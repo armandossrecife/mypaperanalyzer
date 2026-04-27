@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes da Análise - PaperAnalyzer AI{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Análise #{{ paper.id }}</li>
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold mb-0">{{ paper.original_filename }}</h2>
+        <div>
+            <a href="{{ url_for('analysis_logs', paper_id=paper.id) }}" class="btn btn-outline-info rounded-pill px-4 me-2">
+                <i class="bi bi-journal-text me-1"></i> Ver Logs da API
+            </a>
+            {% if paper.status == 'completed' %}
+                <a href="{{ url_for('download', paper_id=paper.id, type='all') }}" class="btn btn-outline-primary rounded-pill px-4">
+                    Download Tudo (.zip)
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        {% if paper.status == 'completed' and result %}
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="fw-bold mb-0">Resumo para os Autores</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="analysis-text">
+                        {{ result.comments_authors_summary | replace('\n', '<br>') | safe }}
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top py-3 text-end">
+                    <a href="{{ url_for('download', paper_id=paper.id, type='authors') }}" class="btn btn-sm btn-link text-primary text-decoration-none">
+                        Baixar Resumo dos Autores (.txt)
+                    </a>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="fw-bold mb-0 text-dark">Resumo para o Comitê (Confidencial)</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="analysis-text">
+                        {{ result.comments_committee_summary | replace('\n', '<br>') | safe }}
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top py-3 text-end">
+                    <a href="{{ url_for('download', paper_id=paper.id, type='committee') }}" class="btn btn-sm btn-link text-primary text-decoration-none">
+                        Baixar Resumo do Comitê (.txt)
+                    </a>
+                </div>
+            </div>
+
+        {% elif paper.status == 'processing' %}
+            <div class="card text-center p-5">
+                <div class="card-body">
+                    <div class="spinner-border text-primary mb-4" role="status" style="width: 3rem; height: 3rem;"></div>
+                    <h3 class="fw-bold">Análise em Andamento</h3>
+                    <p class="text-muted">A OpenAI está processando seu paper. Isso pode levar de 2 a 5 minutos.</p>
+                    <p class="text-muted"><small>Esta página será atualizada automaticamente.</small></p>
+                </div>
+            </div>
+        {% elif paper.status == 'failed' %}
+            <div class="card border-danger mb-4">
+                <div class="card-body p-4 text-center">
+                    <div class="display-4 text-danger mb-3">!</div>
+                    <h4 class="text-danger fw-bold">A análise falhou</h4>
+                    <p class="text-muted">{{ paper.error_message }}</p>
+                    <a href="{{ url_for('upload') }}" class="btn btn-primary rounded-pill px-4">Tentar novamente</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="card p-5 text-center">
+                <p>Status: {{ paper.status }}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header bg-white py-3">
+                <h6 class="fw-bold mb-0">Informações do Paper</h6>
+            </div>
+            <div class="card-body">
+                <dl class="mb-0">
+                    <dt class="small text-muted text-uppercase mb-1">Status</dt>
+                    <dd class="mb-3">
+                        {% if paper.status == 'completed' %}
+                            <span class="badge bg-success">Concluído</span>
+                        {% elif paper.status == 'processing' %}
+                            <span class="badge bg-primary">Processando</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ paper.status }}</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt class="small text-muted text-uppercase mb-1">Upload</dt>
+                    <dd class="mb-3">{{ paper.created_at.split('T')[0] }}</dd>
+
+                    <dt class="small text-muted text-uppercase mb-1">Início da Análise</dt>
+                    <dd class="mb-3">{{ paper.analysis_started_at.split('T')[1].split('.')[0] if paper.analysis_started_at else '-' }}</dd>
+
+                    <dt class="small text-muted text-uppercase mb-1">Fim da Análise</dt>
+                    <dd class="mb-3">{{ paper.analysis_finished_at.split('T')[1].split('.')[0] if paper.analysis_finished_at else '-' }}</dd>
+                    
+                    {% if result %}
+                    <dt class="small text-muted text-uppercase mb-1">Modelo Utilizado</dt>
+                    <dd class="mb-0">{{ result.model_used }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+
+        <div class="card bg-light border-0">
+            <div class="card-body">
+                <h6 class="fw-bold mb-2">Sobre os Resultados</h6>
+                <p class="small text-muted mb-0">
+                    Os resumos acima são versões condensadas (máx. 5000 caracteres) das revisões detalhadas geradas. 
+                    Baixe os arquivos completos (.txt ou .zip) para ler a análise técnica integral.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if paper.status == 'processing' or paper.status == 'uploaded' %}
+<script>
+    setTimeout(function() {
+        window.location.reload();
+    }, 10000); // 10 seconds
+</script>
+{% endif %}
+{% endblock %}
+
+{% block styles %}
+<style>
+    .analysis-text {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #334155;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,12 @@
+[project]
+name = "paper-review-frontend"
+version = "0.1.0"
+description = "Flask frontend for Paper Review AI"
+dependencies = [
+    "flask>=3.0.0",
+    "requests>=2.32.0",
+    "python-dotenv>=1.0.1",
+]
+
+[tool.uv]
+managed = true

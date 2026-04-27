@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Paper Review AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card mt-5">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4 fw-bold">Entrar</h2>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email" name="email" required placeholder="seu@email.com">
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Senha</label>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="******">
+                    </div>
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-muted">Não tem uma conta? <a href="{{ url_for('register') }}" class="text-primary text-decoration-none">Cadastre-se</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
